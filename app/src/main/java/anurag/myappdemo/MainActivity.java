@@ -1,6 +1,8 @@
 package anurag.myappdemo;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -15,12 +17,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -37,6 +45,11 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
     /**
      * The {@link ViewPager} that will host the section contents.
      */
+    private FirebaseAuth mAuth;
+    private static String TAG="MESS";
+    public static  final int Default_Msg_Limit=1000;
+    public static final int RC_SIGN_IN = 1;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private  TabLayout tabLayout;
     private ViewPager mViewPager;
     static CoordinatorLayout coordinatorLayout;
@@ -75,6 +88,32 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         navigationView.setNavigationItemSelectedListener(this);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener=new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                Log.i(TAG,"second point");
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Toast.makeText(MainActivity.this, "Welcome You are logged in", Toast.LENGTH_SHORT).show();
+
+                } else {
+
+                    startActivityForResult(
+                            AuthUI.getInstance()
+                                    .createSignInIntentBuilder().setIsSmartLockEnabled(false)
+                                    .setProviders(
+                                            AuthUI.EMAIL_PROVIDER,
+                                            AuthUI.GOOGLE_PROVIDER
+                                    )
+                                    .build(),
+                            RC_SIGN_IN);
+                }
+            }
+        };
+
     }
     @Override
     public void onBackPressed() {
@@ -108,6 +147,33 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mAuthListener!=null){
+            mAuth.removeAuthStateListener(mAuthListener);
+
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(MainActivity.this, "Signed in", Toast.LENGTH_SHORT).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(MainActivity.this, "Not Signed in", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+        }
+    }
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -132,7 +198,6 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -165,6 +230,11 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
+        }
+        @Override
+        public void onResume() {
+            super.onResume();
+
         }
     }
 
