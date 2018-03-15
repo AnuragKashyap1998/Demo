@@ -128,9 +128,11 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
        // d=f.getReference("Chat");
 
     }
+
     public FirebaseUser getFirebaseUser() {
         return user;
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -228,6 +230,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         public static  final int Default_Msg_Limit=1000;
         public static final int RC_SIGN_IN = 1;
         FirebaseAuth.AuthStateListener mauthstatelistener;
+        FirebaseUser user;
         DatabaseReference users;
         DatabaseReference group;
         ListView mylist;
@@ -271,7 +274,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             int selectionNumber = b.getInt(ARG_SECTION_NUMBER);
             //Important section
 
-            FirebaseUser user = ((MainActivity) getActivity()).getFirebaseUser();
+             user = ((MainActivity) getActivity()).getFirebaseUser();
 
             if (user != null ) {
                 Log.e(TAG, "onAuthStateChanged:signed_in" + user.getUid());
@@ -283,9 +286,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             }
             if(selectionNumber==2)
             {
-                if(user!=null) {
-                    users.child(user.getUid()).child("name").setValue(user.getDisplayName());
-                }
+
               // Toast.makeText(getContext(), mfirebaseAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
                 View rootView = inflater.inflate(R.layout.fragment_main, container, false);
                 mylist = (ListView) rootView.findViewById(R.id.mylist);
@@ -331,10 +332,20 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         @Override
         public void onStart() {
             super.onStart();
+            if(user!=null) {
+                users.child(user.getUid()).child("name").setValue(user.getDisplayName());
+            }
             a=users.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     details.clear();
+                    for(DataSnapshot mysnapshot: dataSnapshot.getChildren()){
+                        Details detail=mysnapshot.getValue(Details.class);
+
+                        details.add(detail);
+
+                        Log.i(TAG,detail.getName());
+                    }
                     adapterList.notifyDataSetChanged();
                 }
 
