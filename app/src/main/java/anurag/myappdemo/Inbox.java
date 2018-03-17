@@ -12,7 +12,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,7 +43,6 @@ public class Inbox extends AppCompatActivity {
     ArrayList<Message> myMessageList;
     DatabaseReference df;
     FloatingActionButton msgbtn;
-    ImageButton gallerybtn;
     EditText mytext;
     String msg;
     AdapterMessage adapterMessage;
@@ -65,7 +63,6 @@ public class Inbox extends AppCompatActivity {
         adapterMessage=new AdapterMessage(this,myMessageList);
         mylistView.setAdapter(adapterMessage);
         msgbtn=(FloatingActionButton) findViewById(R.id.msgbtn);
-        gallerybtn=(ImageButton)findViewById(R.id.gallerybtn);
         mytext=(EditText)findViewById(R.id.mytext);
         mytext.addTextChangedListener(new TextWatcher() {
             @Override
@@ -114,21 +111,7 @@ public class Inbox extends AppCompatActivity {
         Retrofit retrofit=new Retrofit.Builder()
                 .baseUrl("https://translate.yandex.net/").addConverterFactory(GsonConverterFactory.create()).build();
         ApiInterface apiInterface=retrofit.create(ApiInterface.class);
-//        String lang;
-//        ValueEventListener ab=langRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot mysnapshot : dataSnapshot.getChildren()) {
-//                    Arraylang obj=mysnapshot.getValue(Arraylang.class);
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+
         SharedPreferences sharedPreferences=getSharedPreferences("MyappDemo",MODE_PRIVATE);
         String namelang=sharedPreferences.getString("language",null);
         Call<Data> call;

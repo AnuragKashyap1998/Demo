@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             }
             if(selectionNumber==2)
             {
-
+                adapterList.notifyDataSetChanged();
               // Toast.makeText(getContext(), mfirebaseAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
                 View rootView = inflater.inflate(R.layout.fragment_main, container, false);
                 mylist = (ListView) rootView.findViewById(R.id.mylist);
