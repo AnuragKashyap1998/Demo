@@ -1,5 +1,6 @@
 package anurag.myappdemo;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -189,7 +190,30 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 Toast.makeText(MainActivity.this, "Not Signed in", Toast.LENGTH_SHORT).show();
                 finish();
             }
-
+        }
+        if(requestCode==1)
+        {
+            if(resultCode==RESULT_OK)
+            {
+                user=getFirebaseUser();
+                f = FirebaseDatabase.getInstance();
+                String lang=data.getStringExtra("lang");
+                d=f.getReference("language");
+                if(user!=null) {
+                    d.child(user.getUid()).child("lang").setValue(lang.substring(0,2));
+                }
+                SharedPreferences sharedPreferences=getSharedPreferences("MyappDemo",MODE_PRIVATE);
+                String namelang=sharedPreferences.getString("language",null);
+                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                if(lang!=null) {
+                    editor.putString("language", lang.substring(0, 2));
+                }
+                else
+                {
+                    editor.putString("language","en");
+                }
+                    editor.commit();
+            }
         }
     }
     @SuppressWarnings("StatementWithEmptyBody")
@@ -201,7 +225,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
-
+            Intent i=new Intent(MainActivity.this,SelectLanguage.class);
+            startActivityForResult(i,1);
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -335,6 +360,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             super.onStart();
             if(user!=null) {
                 users.child(user.getUid()).child("name").setValue(user.getDisplayName());
+
             }
             a=users.addValueEventListener(new ValueEventListener() {
                 @Override

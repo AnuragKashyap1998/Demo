@@ -1,6 +1,7 @@
 package anurag.myappdemo;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +40,7 @@ public class Inbox extends AppCompatActivity {
     String name2;
     ListView mylistView;
     DatabaseReference d;
+    DatabaseReference langRef;
     ArrayList<Message> myMessageList;
     DatabaseReference df;
     FloatingActionButton msgbtn;
@@ -56,6 +57,7 @@ public class Inbox extends AppCompatActivity {
         frndname=i.getStringExtra("UserNames");
         name2=i.getStringExtra("FireAuth");
         f=FirebaseDatabase.getInstance();
+        langRef=f.getReference("language");
         d=f.getReference(frndname+name2);
         df=f.getReference(name2+frndname);
         mylistView=(ListView)findViewById(R.id.privatemessage);
@@ -112,15 +114,41 @@ public class Inbox extends AppCompatActivity {
         Retrofit retrofit=new Retrofit.Builder()
                 .baseUrl("https://translate.yandex.net/").addConverterFactory(GsonConverterFactory.create()).build();
         ApiInterface apiInterface=retrofit.create(ApiInterface.class);
-
-        Call<Data> call=apiInterface.getda(useText);
+//        String lang;
+//        ValueEventListener ab=langRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot mysnapshot : dataSnapshot.getChildren()) {
+//                    Arraylang obj=mysnapshot.getValue(Arraylang.class);
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+        SharedPreferences sharedPreferences=getSharedPreferences("MyappDemo",MODE_PRIVATE);
+        String namelang=sharedPreferences.getString("language",null);
+        Call<Data> call;
+        if(namelang==null) {
+            call=apiInterface.getda(useText);
+        }
+        else if(namelang.equals("en"))
+        {
+            call=apiInterface.getda(useText);
+        }
+        else
+        {
+            call=apiInterface.getde(useText);
+        }
         call.enqueue(new Callback<Data>() {
             @Override
             public void onResponse(Call<Data> call, Response<Data> response) {
                 Log.i("MESS","in");
                 Data data=response.body();
                 text=data.gettext();
-                Toast.makeText(Inbox.this,text,Toast.LENGTH_SHORT).show();
                 String id2=df.push().getKey();
                 String id = d.push().getKey();
                 Message message = new Message(id,text,name2,"Anonymus");

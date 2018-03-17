@@ -12,6 +12,8 @@ public interface ApiInterface {
     //yha change kiya han
     @POST("api/v1.5/tr.json/translate?lang=en-hi&key=trnsl.1.1.20180315T201927Z.0f89e876a1e23180.5ca9c6e550fc7c1baa3bb1f077c58d5007f680b5")
     Call<Data> getda(@Query("text") String text);
+    @POST("api/v1.5/tr.json/translate?lang=hi-en&key=trnsl.1.1.20180315T201927Z.0f89e876a1e23180.5ca9c6e550fc7c1baa3bb1f077c58d5007f680b5")
+    Call<Data> getde(@Query("text") String text);
    // @GET("api/v1.5/tr.json/translate")
     //Call<Data> getda(@QueryMap Map<String,String> options);
     //@GET("translate")
