@@ -22,6 +22,10 @@
         <activity
             android:name=".Inbox"
             android:label="@string/title_activity_inbox"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SelectLanguage"
+            android:label="@string/title_activity_select_language"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

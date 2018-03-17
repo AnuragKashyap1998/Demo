@@ -8,10 +8,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -22,8 +24,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class Inbox extends AppCompatActivity {
 
+    String text;
     private static final int Default_Msg_Limit=1000;
     FirebaseAuth mfirebaseauth;
     FirebaseDatabase f;
@@ -81,19 +90,48 @@ public class Inbox extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myMessageList.clear();
+                fetchCourses(mytext.getText().toString());
                 String messages = mytext.getText().toString().trim();
 
                 String id = d.push().getKey();
-                String id2=df.push().getKey();
 
                 Message message = new Message(id,messages,name2,"Anonymus");
                 d.child(id).setValue(message);
-                df.child(id2).setValue(message);
                 mytext.setText("");
             }
         });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+
+    }
+    private void fetchCourses(String useText)
+    {
+        Log.i("MESS","fetch");
+        Retrofit retrofit=new Retrofit.Builder()
+                .baseUrl("https://translate.yandex.net/").addConverterFactory(GsonConverterFactory.create()).build();
+        ApiInterface apiInterface=retrofit.create(ApiInterface.class);
+
+        Call<Data> call=apiInterface.getda(useText);
+        call.enqueue(new Callback<Data>() {
+            @Override
+            public void onResponse(Call<Data> call, Response<Data> response) {
+                Log.i("MESS","in");
+                Data data=response.body();
+                text=data.gettext();
+                Toast.makeText(Inbox.this,text,Toast.LENGTH_SHORT).show();
+                String id2=df.push().getKey();
+                String id = d.push().getKey();
+                Message message = new Message(id,text,name2,"Anonymus");
+                df.child(id2).setValue(message);
+            }
+
+            @Override
+            public void onFailure(Call<Data> call, Throwable t) {
+
+            }
+        });
 
     }
 

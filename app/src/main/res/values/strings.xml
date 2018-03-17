@@ -97,4 +97,5 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="title_activity_inbox">Inbox</string>
+    <string name="title_activity_select_language">SelectLanguage</string>
 </resources>
