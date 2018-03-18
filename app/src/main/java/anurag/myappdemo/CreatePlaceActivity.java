@@ -179,7 +179,7 @@ public class CreatePlaceActivity extends AppCompatActivity implements OnMapReady
 
 
 
-
+                    finish();
 
                 }
             }

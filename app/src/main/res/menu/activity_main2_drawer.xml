@@ -5,7 +5,7 @@
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="Create" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/com_facebook_tooltip_blue_background"

@@ -149,10 +149,8 @@ public class Inbox extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(a==null){
-            ValueEventListener a= d.addValueEventListener(new ValueEventListener() {
+             a= d.addValueEventListener(new ValueEventListener() {
                 @Override
-
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot mysnapshot : dataSnapshot.getChildren()) {
 
@@ -169,7 +167,6 @@ public class Inbox extends AppCompatActivity {
 
                 }
             });
-        }
     }
     private void scrollMyListViewToBottom() {
         mylistView.post(new Runnable() {

@@ -109,9 +109,9 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 Log.i(TAG,"second point");
-                user = firebaseAuth.getCurrentUser();
+                user = mAuth.getCurrentUser();
                 if (user != null) {
-                    Toast.makeText(MainActivity.this, "You are logged in", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "You are logged in"+user.getDisplayName(), Toast.LENGTH_SHORT).show();
 
                 } else {
 
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         {
             if(resultCode==RESULT_OK)
             {
-                user=getFirebaseUser();
+               // user=getFirebaseUser();
                 f = FirebaseDatabase.getInstance();
                 String lang=data.getStringExtra("lang");
                 d=f.getReference("language");
@@ -227,6 +227,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            Intent i = new Intent(MainActivity.this,CreatePlaceActivity.class);
+            startActivity(i);
         } else if (id == R.id.nav_gallery) {
             Intent i=new Intent(MainActivity.this,SelectLanguage.class);
             startActivityForResult(i,1);
@@ -267,7 +269,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         static ArrayList<Details> details;
 
         private static final String ARG_SECTION_NUMBER = "section_number";
-        private FirebaseAuth mfirebaseAuth;
+        FirebaseAuth mfirebaseAuth;
 
         Places_DatabaseHelper db;
         Button create_btn,search_btn;
@@ -290,34 +292,38 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-
-            mfirebaseAuth = FirebaseAuth.getInstance();
+            mfirebaseAuth=FirebaseAuth.getInstance();
             f = FirebaseDatabase.getInstance();
             chat = f.getReference("Chat");
             users = f.getReference("users");
             group = f.getReference("Group Chat");
             user = ((MainActivity) getActivity()).getFirebaseUser();
+            if(user!=null) {
+                users.child(user.getUid()).child("name").setValue(user.getDisplayName());
+            }
             //for finding the current name of user
 
             Bundle b = getArguments();
             details = new ArrayList<>();
             adapterList = new AdapterList(getActivity(), details);
-
             int selectionNumber = b.getInt(ARG_SECTION_NUMBER);
             //Important section
             if (selectionNumber == 1) {
                 View rootView = inflater.inflate(R.layout.fragment_places_list, container, false);
-                create_btn=rootView.findViewById(R.id.btn_create_places);
-                search_btn=rootView.findViewById(R.id.btn_search_places);
+                //create_btn=rootView.findViewById(R.id.btn_create_places);
+                //search_btn=rootView.findViewById(R.id.btn_search_places);
                 placeslist=rootView.findViewById(R.id.lv_place_places);
-
-                create_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent i = new Intent(getActivity(),CreatePlaceActivity.class);
-                        startActivity(i);
-                    }
-                });
+                user = ((MainActivity) getActivity()).getFirebaseUser();
+                if(user!=null) {
+                    users.child(user.getUid()).child("name").setValue(user.getDisplayName());
+                }
+//                create_btn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        Intent i = new Intent(getActivity(),CreatePlaceActivity.class);
+//                        startActivity(i);
+//                    }
+//                });
 
                 db = new Places_DatabaseHelper(getActivity());
 
@@ -347,7 +353,10 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
             }
             if (selectionNumber == 2) {
-                adapterList.notifyDataSetChanged();
+                user = ((MainActivity) getActivity()).getFirebaseUser();
+                if(user!=null) {
+                    users.child(user.getUid()).child("name").setValue(user.getDisplayName());
+                }
                 // Toast.makeText(getContext(), mfirebaseAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
                 View rootView = inflater.inflate(R.layout.fragment_main, container, false);
                 mylist = (ListView) rootView.findViewById(R.id.mylist);
@@ -363,7 +372,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 });
                 return rootView;
 
-            } else {
+            } else{
                 View rootView = inflater.inflate(R.layout.fragment_main, container, false);
                 return rootView;
             }
@@ -391,29 +400,32 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         @Override
         public void onStart() {
             super.onStart();
-            if(user!=null) {
-                users.child(user.getUid()).child("name").setValue(user.getDisplayName());
-
-            }
-            a=users.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    details.clear();
-                    for(DataSnapshot mysnapshot: dataSnapshot.getChildren()){
-                        Details detail=mysnapshot.getValue(Details.class);
-
-                        details.add(detail);
-
-                        Log.i(TAG,detail.getName());
-                    }
-                    adapterList.notifyDataSetChanged();
+            user = ((MainActivity) getActivity()).getFirebaseUser();
+            users = f.getReference("users");
+                if(user!=null) {
+                    users.child(user.getUid()).child("name").setValue(user.getDisplayName());
                 }
+                if(a==null) {
+                    a = users.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            details.clear();
+                            for (DataSnapshot mysnapshot : dataSnapshot.getChildren()) {
+                                Details detail = mysnapshot.getValue(Details.class);
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                                details.add(detail);
 
+                                Log.i(TAG, detail.getName());
+                            }
+                            adapterList.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }
-            });
 
         }
     }
