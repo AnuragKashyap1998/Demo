@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.dgproduction.erdeepak_kumar.tourismapp.CreatePlaceActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_name_createplace"
+                android:textSize="20dp"
+                android:fontFamily="casual"
+                android:textColor="#000000"
+                android:hint="Name"
+                android:inputType="textPersonName"
+                />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_place_createplace"
+                android:hint="Place"
+                android:fontFamily="casual"
+                android:textColor="#000000"
+                android:textSize="20dp"
+                android:inputType="textPersonName"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Type"
+                android:id="@+id/et_type_createplace"
+                android:inputType="textPersonName"
+                android:fontFamily="casual"
+                android:textColor="#000000"
+                android:textSize="20dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Image URL 1"
+                android:id="@+id/et_url1_createplace"
+                android:inputType="text"
+                android:layout_marginTop="10dp"
+                android:fontFamily="casual"
+                android:textColor="#000000"
+                android:textSize="15dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Image URL2"
+                android:id="@+id/et_url2_createplace"
+                android:inputType="text"
+                android:fontFamily="casual"
+                android:textColor="#000000"
+                android:textSize="15dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Image URL3"
+                android:id="@+id/et_url3_createplace"
+                android:inputType="text"
+                android:fontFamily="casual"
+                android:textColor="#000000"
+                android:textSize="15dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Description :"
+                    android:fontFamily="casual"
+                    android:textColor="#000000"
+                    android:textSize="20dp"
+                    android:textStyle="bold"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:textSize="18dp"
+                    android:layout_gravity="left|top"
+                    android:inputType="textMultiLine"
+                    android:id="@+id/et_description_createplace"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="8"
+                        android:layout_height="wrap_content"
+                        android:text="Location :"
+                        android:fontFamily="casual"
+                        android:textColor="#000000"
+                        android:textSize="20dp"
+                        android:textStyle="bold"/>
+
+                    <ImageButton
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="5dp"
+                        android:id="@+id/ib_get_location_createplace"
+                        android:background="@drawable/com_facebook_button_icon_blue"
+                        android:layout_marginRight="5dp" />
+                </LinearLayout>
+
+                <fragment
+                    android:id="@+id/map"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="8"
+                        android:layout_height="wrap_content"
+                        android:text="Add Guides :"
+                        android:fontFamily="casual"
+                        android:textColor="#000000"
+                        android:textSize="20dp"
+                        android:textStyle="bold"/>
+
+                    <ImageButton
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="5dp"
+                        android:id="@+id/ib_add_guide_createplace"
+                        android:background="@drawable/com_facebook_button_icon_blue"
+                        android:layout_marginRight="5dp" />
+                </LinearLayout>
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp"
+                    android:id="@+id/lv_guide_createplace">
+
+                </ListView>
+
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:id="@+id/btn_save_createplace"
+                android:text="SAVE"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

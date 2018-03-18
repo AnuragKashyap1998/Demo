@@ -1,4 +1,5 @@
 package anurag.myappdemo;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -36,6 +38,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener {
@@ -251,9 +254,9 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
          * fragment.
          */
         public FirebaseDatabase f;
-        public    DatabaseReference chat;
-        ValueEventListener a,b;
-        public static  final int Default_Msg_Limit=1000;
+        public DatabaseReference chat;
+        ValueEventListener a, b;
+        public static final int Default_Msg_Limit = 1000;
         public static final int RC_SIGN_IN = 1;
         FirebaseAuth.AuthStateListener mauthstatelistener;
         FirebaseUser user;
@@ -266,6 +269,9 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         private static final String ARG_SECTION_NUMBER = "section_number";
         private FirebaseAuth mfirebaseAuth;
 
+        Places_DatabaseHelper db;
+        Button create_btn,search_btn;
+        ListView placeslist;
         public PlaceholderFragment() {
         }
 
@@ -285,12 +291,12 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            mfirebaseAuth=FirebaseAuth.getInstance();
+            mfirebaseAuth = FirebaseAuth.getInstance();
             f = FirebaseDatabase.getInstance();
             chat = f.getReference("Chat");
             users = f.getReference("users");
-            group=f.getReference("Group Chat");
-
+            group = f.getReference("Group Chat");
+            user = ((MainActivity) getActivity()).getFirebaseUser();
             //for finding the current name of user
 
             Bundle b = getArguments();
@@ -299,10 +305,40 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
             int selectionNumber = b.getInt(ARG_SECTION_NUMBER);
             //Important section
+            if (selectionNumber == 1) {
+                View rootView = inflater.inflate(R.layout.fragment_places_list, container, false);
+                create_btn=rootView.findViewById(R.id.btn_create_places);
+                search_btn=rootView.findViewById(R.id.btn_search_places);
+                placeslist=rootView.findViewById(R.id.lv_place_places);
 
-             user = ((MainActivity) getActivity()).getFirebaseUser();
+                create_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent i = new Intent(getActivity(),CreatePlaceActivity.class);
+                        startActivity(i);
+                    }
+                });
 
-            if (user != null ) {
+                db = new Places_DatabaseHelper(getActivity());
+
+                final ArrayList<Places> placesdetail= db.getAllPlaces();
+                final MyPlacesAdapter adapter= new MyPlacesAdapter(getActivity(),placesdetail);
+                placeslist.setAdapter(adapter);
+
+                placeslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                       Intent intent = new Intent(getActivity(),PlaceDetailActivity.class);
+                        intent.putExtra("PLACESDETAILS", (Serializable)adapterView.getItemAtPosition(i));
+                         intent.putExtra("PLACESDETAILS", (Serializable) placesdetail.get(i));
+
+                        startActivity(intent);
+                    }
+                });
+                return rootView;
+            }
+
+            if (user != null) {
                 Log.e(TAG, "onAuthStateChanged:signed_in" + user.getUid());
 
             } else { //user is not logged in
@@ -310,31 +346,28 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 Log.e(TAG, "onAuthStateChanged:signed_out");
 
             }
-            if(selectionNumber==2)
-            {
+            if (selectionNumber == 2) {
                 adapterList.notifyDataSetChanged();
-              // Toast.makeText(getContext(), mfirebaseAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getContext(), mfirebaseAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
                 View rootView = inflater.inflate(R.layout.fragment_main, container, false);
                 mylist = (ListView) rootView.findViewById(R.id.mylist);
                 mylist.setAdapter(adapterList);
                 mylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        Intent i1=new Intent(getActivity(), Inbox.class);
-                        i1.putExtra("UserNames",details.get(i).getName());
-                        i1.putExtra("FireAuth",mfirebaseAuth.getCurrentUser().getDisplayName());
+                        Intent i1 = new Intent(getActivity(), Inbox.class);
+                        i1.putExtra("UserNames", details.get(i).getName());
+                        i1.putExtra("FireAuth", mfirebaseAuth.getCurrentUser().getDisplayName());
                         startActivity(i1);
                     }
-               });
+                });
                 return rootView;
 
-            }
-            else {
+            } else {
                 View rootView = inflater.inflate(R.layout.fragment_main, container, false);
                 return rootView;
             }
         }
-
         @Override
         public void onPause() {
             super.onPause();
